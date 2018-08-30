@@ -1,0 +1,32 @@
+
+
+f[x_] := Cos[x]^2*E^-x;
+
+Print["Using NIntegrate:"];
+NIntegrate[f[x], {x, -10, 10}]
+
+trapezoid[minX_, maxX_, partition_] :=
+  
+  With[{a = minX, b = maxX, n = partition},
+   int = (b - a)/n ;
+   part[i_] = a + i*int;
+   sum = Sum[((f[part[i]] + f[part[i - 1]])/2)*(part[i] - 
+        part[i - 1]), {i, 1, n}];
+   Return[sum];];
+
+simpson[minX_, maxX_, n_] :=
+  
+  Sum[(((1/6) f[part[i]]) + (2/
+         3) (f[(part[i] + part[i - 1])/2]) + ((1/6) f[
+         part[i - 1]]))*(part[i] - part[i - 1]), {i, 1, n}];
+
+
+Print["Trapezoid Method 100, 200, 1000 partitions:"];
+trapezoid[-10, 10, 100] // N
+trapezoid[-10, 10, 200] // N
+trapezoid[-10, 10, 1000] // N
+
+Print["Simpson Rule 100, 200, 1000 partitions:"]
+simpson[-10, 10, 100] // N
+simpson[-10, 10, 200] // N
+simpson[-10, 10, 1000] // N
