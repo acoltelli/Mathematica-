@@ -1,0 +1,19 @@
+f[x_] = (10 x^3 - 6 x^2 - 4 x)*E^-x;
+m = Array[f, 11, 0];
+list = Range[0, 10];
+
+vandermonde = IdentityMatrix[11];
+For[i = 1, i < 12, i++,
+  For[j = 1, j < 12, j++,
+   If[j > 1, vandermonde[[i, j]] = (list[[i]])^(j - 1)];
+   If[j == 1, vandermonde[[i, 1]] = 1]]];
+sol = Inverse[vandermonde].m;
+
+interpolant[x_] = Sum[sol[[i]]*x^(i - 1), {i, 11}];
+
+Plot[{interpolant[x], f[x]}, {x, 0, 10}, PlotLegends -> "Expressions"]
+
+Print["Vandermonde interpolation:"]
+Integrate[interpolant[x], {x, 0, 10}] // N
+Print["N Integrate:"]
+NIntegrate[f[x], {x, 0, 10}] 

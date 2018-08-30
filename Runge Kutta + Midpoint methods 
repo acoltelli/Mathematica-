@@ -1,0 +1,34 @@
+f[t_, y_] = E^((-y^2)/t)/Sqrt[Pi];
+delT = .1;
+list = {};
+m = {0};
+
+For[i = 1, i <= 10, i += .1, AppendTo[list, i]];
+Do[
+  k1 = f[list[[i]], m[[i]]];
+  k2 = f[list[[i]] + .25*delT, m[[i]] + .25*k1*delT];
+  k3 = f[list[[i]] + .25*delT, m[[i]] + (1/8) k1*delT + (1/8) k2*delT];
+  k4 = f[list[[i]] + .5*delT, m[[i]] - .5*k2*delT + k3*delT];
+  k5 = f[list[[i]] + .75*delT, 
+    m[[i]] + (3/16) k1*delT + (9/16) k4*delT];
+  k6 = f[list[[i]] + delT, 
+    m[[i]] - (3/7) k1*delT + (2/7) k1*delT + (12/7) k3*
+      delT - (12/7) k4*delT + (8/7) k5*delT];
+  AppendTo[m, 
+   m[[i]] + 1/90 (7 k1 + 32 k3 + 12 k4 + 32 k5 + 7 k6) delT], {i, 90}];
+rungekutta = Flatten[{list, m}, {{2}, {1}}];(*ordered pair*)
+
+midpoint = {0};
+For[i = 1, i <= 90, i++,
+  AppendTo[midpoint, 
+   midpoint[[i]] + 
+    f[list[[i]] + (delT/2), 
+      midpoint[[i]] + f[list[[i]], midpoint[[i]]]*delT/2]*delT]];
+midpoint = Flatten[{list, midpoint}, {{2}, {1}}];
+
+ListLinePlot[{rungekutta, midpoint}, 
+ PlotLegends -> {"Runge Kutta", "Midpoint"}]
+(*Can not see graph of RK method when graphed together with midpoint \
+so printed out RK only graph also*)
+Print["Just RK:"];
+ListLinePlot[rungekutta]
