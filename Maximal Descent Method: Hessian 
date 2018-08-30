@@ -1,0 +1,41 @@
+(* #1 Maximal Descent*)
+f[x_, y_] := x^2 + x*y + y^2;
+g = Grad[f[x, y], {x, y}];
+d[x_, y_] = g;
+plane[t_, x_, y_] := {x, y} + t*d[x, y];
+{x0, y0} = {2., 1.};
+list = {};
+
+For[i = 1, i < 10, i++,
+  {a, b} = plane[t, x0, y0];
+  h[t_] = f[a, b];
+  t0 = Values[Solve[D[h[t], t] == 0, t]];
+  {x1, y1} = plane[# & @@ # & @@ t0, x0, y0];
+  {x0, y0} = {x1, y1};
+  AppendTo[list, {"Iteration: " <> ToString[i], {x0, y0}}];
+  ];
+list
+
+
+
+(* #2 Hessian*)
+f[x_, y_] := x^2 + x*y + y^2;
+g = Grad[f[x, y], {x, y}];
+d[x_, y_] = g;
+plane[t_, x_, y_] := {x, y} + t*d[x, y];
+H = DiagonalMatrix[{D[f[x, y], {x, 2}], D[f[x, y], {y, 2}]}];
+H[[1, 2]] = D[f[x, y], x, y];
+H[[2, 1]] = D[f[x, y], y, x];
+list = {};
+{x0, y0} = {2., 1.};
+For[i = 1, i < 14, i++,
+  sol[x_, y_] = H.{x, y}*-.5;
+  sol[x0, y0];
+  {a, b} = plane[t, x0, y0];
+  h[t_] = f[a, b];
+  t0 = Values[Solve[D[h[t], t] == 0, t]];
+  {x1, y1} = plane[# & @@ # & @@ t0, x0, y0];
+  {x0, y0} = {x1, y1};
+  AppendTo[list, {"Iteration: " <> ToString[i], {x0, y0}}];
+  ];
+list
